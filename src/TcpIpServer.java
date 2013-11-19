@@ -2,6 +2,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.Hashtable;
 
 public class TcpIpServer {
@@ -12,6 +13,8 @@ public class TcpIpServer {
 
 	public TcpIpServer() {
 		dcMap = new Hashtable<Integer, DataOutputStream>();
+		// 여러 스레드에서 접근할 것이므로 동기화
+		Collections.synchronizedMap(dcMap);
 		try {
 			serverSocket = new ServerSocket(5078);
 			while (true) {
