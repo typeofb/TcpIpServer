@@ -32,10 +32,9 @@ public class Web implements Runnable {
 					byte[] byteArray = result;
 					switch ((char) byteArray[0]) {
 					case 'A':
-						//reserveControl(); // 예약제어
+						reserveControl(); // 예약제어
 						break;
 					default:
-						reserveControl(); // 임시 테스트 예약제어
 						break;
 					}
 				}
