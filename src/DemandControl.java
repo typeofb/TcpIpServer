@@ -26,9 +26,15 @@ public class DemandControl implements Runnable {
 			dos = new DataOutputStream(socket.getOutputStream());
 
 			byte[] buffer = new byte[1024];
-			while (dis.read(buffer, 0, buffer.length) != -1) {
-				byte[] byteArray = Common.checkBCC(buffer);
-
+			byte[] result = null;
+			int leftBufferSize = 0;
+			while ((leftBufferSize = dis.read(buffer, 0, buffer.length)) != -1) {
+				result = new byte[leftBufferSize];
+				for (int i = 0; i < result.length; i++) {
+					result[i] = buffer[i];
+				}
+				
+				byte[] byteArray = Common.checkBCC(result);
 				switch ((char) byteArray[0]) {
 				case 'V':
 					TcpIpServer.dcMap.put(Common.twoByteArrayToInt(byteArray, 1), dos);
@@ -42,7 +48,7 @@ public class DemandControl implements Runnable {
 					timeSynchronize(byteArray, dos);
 					break;
 				case 'A':
-					System.out.println("예약제어");
+					System.out.println("******************** 예약제어 ********************");
 					break;
 				default:
 					break;

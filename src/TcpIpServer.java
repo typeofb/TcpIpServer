@@ -28,6 +28,8 @@ public class TcpIpServer {
 	}
 
 	public static void main(String[] args) {
+		
+		System.out.println("BAMS SERVER START...");
 
 		Thread mainThread = new Thread(new MainThread());
 		Thread webThread = new Thread(new Web());
