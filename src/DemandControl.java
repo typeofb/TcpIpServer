@@ -49,6 +49,7 @@ public class DemandControl implements Runnable {
 					break;
 				case 'A':
 					System.out.println("******************** 예약제어 ********************");
+					reserveControl(byteArray);
 					break;
 				default:
 					break;
@@ -139,5 +140,26 @@ public class DemandControl implements Runnable {
 
 		out.close();
 		baos.close();
+	}
+	
+	// ③ DC -> Server -> Web
+	private void reserveControl(byte[] byteArray) throws IOException {
+		
+		byte[] sendResultArr = new byte[3];
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(baos);
+		
+		out.write(byteArray[0]); // Command
+		out.write(byteArray[1]); // DC ID
+		out.write(byteArray[2]); // DC ID
+		
+		sendResultArr = baos.toByteArray();
+		System.out.println(sendResultArr);
+		
+		// key:0 Web DataOutputStream
+		DataOutputStream dos = TcpIpServer.dcMap.get(0);
+		dos.write(sendResultArr);
+		dos.flush();
 	}
 }
