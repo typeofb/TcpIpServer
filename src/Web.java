@@ -11,6 +11,7 @@ public class Web implements Runnable {
 	Socket socket;
 	DataInputStream dis;
 	DataOutputStream dos;
+	DcVO dcVO = new DcVO();
 
 	@Override
 	public void run() {
@@ -21,8 +22,15 @@ public class Web implements Runnable {
 				System.out.println(socket.getInetAddress() + ":" + socket.getPort() + "웹으로부터 연결요청이 들어왔습니다.");
 				dis = new DataInputStream(socket.getInputStream());
 				dos = new DataOutputStream(socket.getOutputStream());
+				
+				dcVO.setDcId(0);
+				dcVO.setInetAddress(socket.getInetAddress());
+				dcVO.setPort(socket.getPort());
+				dcVO.setDis(dis);
+				dcVO.setDos(dos);
+				
 				// key:0 Web DataOutputStream
-				TcpIpServer.dcMap.put(0, dos);
+				TcpIpServer.dcMap.put(dcVO.getDcId(), dcVO);
 
 				byte[] buffer = new byte[1024];
 				byte[] result = null;
@@ -54,6 +62,7 @@ public class Web implements Runnable {
 		int mtrCtrlNo = Common.oneByteArrayToInt(byteArray, 1);	// 회차 번호
 		int manyType = Common.oneByteArrayToInt(byteArray, 2);	// 1: 단일 전송, 2: 다수 전송
 		int cpeDcId = Common.twoByteArrayToInt(byteArray, 3);	// DC ID
+		System.out.println(mtrCtrlNo + manyType + cpeDcId);
 		
 		byte[] sendResultArr = new byte[32];
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -84,7 +93,7 @@ public class Web implements Runnable {
 		baos.close();
 		dos.close();
 		
-		DataOutputStream out = TcpIpServer.dcMap.get(cpeDcId);
+		DataOutputStream out = TcpIpServer.dcMap.get(cpeDcId).getDos();
 		out.write(Common.makeBCC(sendResultArr));
 		out.flush();
 	}

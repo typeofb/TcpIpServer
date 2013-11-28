@@ -12,6 +12,7 @@ public class DemandControl implements Runnable {
 	DataInputStream dis;
 	DataOutputStream dos;
 	TcpIpServer tcpIpServer;
+	DcVO dcVO = new DcVO();
 
 	public DemandControl(TcpIpServer tcpIpServer) {
 		this.tcpIpServer = tcpIpServer;
@@ -24,6 +25,11 @@ public class DemandControl implements Runnable {
 			System.out.println(socket.getInetAddress() + ":" + socket.getPort() + "로부터 연결요청이 들어왔습니다.");
 			dis = new DataInputStream(socket.getInputStream());
 			dos = new DataOutputStream(socket.getOutputStream());
+			
+			dcVO.setInetAddress(socket.getInetAddress());
+			dcVO.setPort(socket.getPort());
+			dcVO.setDis(dis);
+			dcVO.setDos(dos);
 
 			byte[] buffer = new byte[1024];
 			byte[] result = null;
@@ -37,12 +43,14 @@ public class DemandControl implements Runnable {
 				byte[] byteArray = Common.checkBCC(result);
 				switch ((char) byteArray[0]) {
 				case 'V':
-					TcpIpServer.dcMap.put(Common.twoByteArrayToInt(byteArray, 1), dos);
+					dcVO.setDcId(Common.twoByteArrayToInt(byteArray, 1));
+					TcpIpServer.dcMap.put(dcVO.getDcId(), dcVO);
 					System.out.println(TcpIpServer.dcMap);
 					presentMonitor(byteArray);
 					break;
 				case 'B':
 					ackConfirm(byteArray, dos);
+					dcVO.setAckCheck(1);
 					break;
 				case 'T':
 					timeSynchronize(byteArray, dos);
@@ -158,7 +166,7 @@ public class DemandControl implements Runnable {
 		System.out.println(sendResultArr);
 		
 		// key:0 Web DataOutputStream
-		DataOutputStream dos = TcpIpServer.dcMap.get(0);
+		DataOutputStream dos = TcpIpServer.dcMap.get(0).getDos();
 		dos.write(sendResultArr);
 		dos.flush();
 	}

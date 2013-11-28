@@ -1,4 +1,3 @@
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,10 +8,10 @@ public class TcpIpServer {
 
 	private ServerSocket serverSocket;
 	public Socket socket;
-	public static Hashtable<Integer, DataOutputStream> dcMap;
+	public static Hashtable<Integer, DcVO> dcMap;
 
 	public TcpIpServer() {
-		dcMap = new Hashtable<Integer, DataOutputStream>();
+		dcMap = new Hashtable<Integer, DcVO>();
 		// 여러 스레드에서 접근할 것이므로 동기화
 		Collections.synchronizedMap(dcMap);
 		try {
