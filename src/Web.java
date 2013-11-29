@@ -41,10 +41,9 @@ public class Web implements Runnable {
 						result[i] = buffer[i];
 					}
 					
-					byte[] byteArray = result;
-					switch ((char) byteArray[0]) {
+					switch ((char) result[0]) {
 					case 'A':
-						reserveControl(byteArray); // 예약제어
+						reserveControl(result); // 예약제어
 						break;
 					default:
 						break;
