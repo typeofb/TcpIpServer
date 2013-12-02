@@ -67,6 +67,18 @@ public class DemandControl implements Runnable {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 

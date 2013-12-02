@@ -17,18 +17,22 @@ public class Web implements Runnable {
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(3000);
-			while (true) {
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		while (true) {
+			try {
 				socket = serverSocket.accept();
 				System.out.println(socket.getInetAddress() + ":" + socket.getPort() + "웹으로부터 연결요청이 들어왔습니다.");
 				dis = new DataInputStream(socket.getInputStream());
 				dos = new DataOutputStream(socket.getOutputStream());
-				
+
 				dcVO.setDcId(0);
 				dcVO.setInetAddress(socket.getInetAddress());
 				dcVO.setPort(socket.getPort());
 				dcVO.setDis(dis);
 				dcVO.setDos(dos);
-				
+
 				// key:0 Web DataOutputStream
 				TcpIpServer.dcMap.put(dcVO.getDcId(), dcVO);
 
@@ -41,7 +45,7 @@ public class Web implements Runnable {
 						for (int i = 0; i < result.length; i++) {
 							result[i] = buffer[i];
 						}
-						
+
 						switch ((char) result[0]) {
 						case 'A':
 							reserveControl(result); // 예약제어
@@ -51,9 +55,21 @@ public class Web implements Runnable {
 						}
 					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				try {
+					socket.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+					socket.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
