@@ -34,35 +34,33 @@ public class DemandControl implements Runnable {
 			byte[] buffer = new byte[1024];
 			byte[] result = null;
 			int leftBufferSize = 0;
-			if (dis.available() > 0) {
-				while ((leftBufferSize = dis.read(buffer, 0, buffer.length)) != -1) {
-					result = new byte[leftBufferSize];
-					for (int i = 0; i < result.length; i++) {
-						result[i] = buffer[i];
-					}
-					
-					byte[] byteArray = Common.checkBCC(result);
-					switch ((char) byteArray[0]) {
-					case 'V':
-						dcVO.setDcId(Common.twoByteArrayToInt(byteArray, 1));
-						TcpIpServer.dcMap.put(dcVO.getDcId(), dcVO);
-						System.out.println(TcpIpServer.dcMap);
-						presentMonitor(byteArray);
-						break;
-					case 'B':
-						ackConfirm(byteArray, dos);
-						dcVO.setAckCheck(1);
-						break;
-					case 'T':
-						timeSynchronize(byteArray, dos);
-						break;
-					case 'A':
-						System.out.println("******************** 예약제어 ********************");
-						reserveControl(byteArray);
-						break;
-					default:
-						break;
-					}
+			while ((leftBufferSize = dis.read(buffer, 0, buffer.length)) != -1) {
+				result = new byte[leftBufferSize];
+				for (int i = 0; i < result.length; i++) {
+					result[i] = buffer[i];
+				}
+				
+				byte[] byteArray = Common.checkBCC(result);
+				switch ((char) byteArray[0]) {
+				case 'V':
+					dcVO.setDcId(Common.twoByteArrayToInt(byteArray, 1));
+					TcpIpServer.dcMap.put(dcVO.getDcId(), dcVO);
+					System.out.println(TcpIpServer.dcMap);
+					presentMonitor(byteArray);
+					break;
+				case 'B':
+					ackConfirm(byteArray, dos);
+					dcVO.setAckCheck(1);
+					break;
+				case 'T':
+					timeSynchronize(byteArray, dos);
+					break;
+				case 'A':
+					System.out.println("******************** 예약제어 ********************");
+					reserveControl(byteArray);
+					break;
+				default:
+					break;
 				}
 			}
 		} catch (IOException e) {

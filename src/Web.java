@@ -39,20 +39,18 @@ public class Web implements Runnable {
 				byte[] buffer = new byte[1024];
 				byte[] result = null;
 				int leftBufferSize = 0;
-				if (dis.available() > 0) {
-					while ((leftBufferSize = dis.read(buffer, 0, buffer.length)) != -1) {
-						result = new byte[leftBufferSize];
-						for (int i = 0; i < result.length; i++) {
-							result[i] = buffer[i];
-						}
+				while ((leftBufferSize = dis.read(buffer, 0, buffer.length)) != -1) {
+					result = new byte[leftBufferSize];
+					for (int i = 0; i < result.length; i++) {
+						result[i] = buffer[i];
+					}
 
-						switch ((char) result[0]) {
-						case 'A':
-							reserveControl(result); // 예약제어
-							break;
-						default:
-							break;
-						}
+					switch ((char) result[0]) {
+					case 'A':
+						reserveControl(result); // 예약제어
+						break;
+					default:
+						break;
 					}
 				}
 			} catch (IOException e) {
