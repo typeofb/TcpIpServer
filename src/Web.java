@@ -12,14 +12,17 @@ public class Web implements Runnable {
 	DataInputStream dis;
 	DataOutputStream dos;
 	DcVO dcVO = new DcVO();
-
-	@Override
-	public void run() {
+	
+	public Web() {
 		try {
 			serverSocket = new ServerSocket(3000);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void run() {
 		while (true) {
 			try {
 				socket = serverSocket.accept();
@@ -74,10 +77,10 @@ public class Web implements Runnable {
 	private void reserveControl(byte[] byteArray) throws IOException {
 		
 		// ② Server -> DC
-		int mtrCtrlNo = Common.oneByteArrayToInt(byteArray, 1);	// 회차 번호
-		int manyType = Common.oneByteArrayToInt(byteArray, 2);	// 1: 단일 전송, 2: 다수 전송
-		int cpeDcId = Common.twoByteArrayToInt(byteArray, 3);	// DC ID
-		System.out.println(mtrCtrlNo + manyType + cpeDcId);
+		Integer mtrCtrlNo = Common.oneByteArrayToInt(byteArray, 1);	// 회차 번호
+		Integer manyType = Common.oneByteArrayToInt(byteArray, 2);	// 1: 단일 전송, 2: 다수 전송
+		Integer cpeDcId = Common.twoByteArrayToInt(byteArray, 3);	// DC ID
+		System.out.println(mtrCtrlNo.toString() + " / " + manyType.toString() + " / " + cpeDcId.toString());
 		
 		byte[] sendResultArr = new byte[32];
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

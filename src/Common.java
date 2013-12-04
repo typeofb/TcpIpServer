@@ -43,7 +43,7 @@ public class Common {
 
 	public static byte[] checkBCC(byte[] in) {
 		int dataCnt = 0;				// 복사할 배열의 INDEX
-		byte[] result = new byte[1024]; // 복사할 배열
+		byte[] result = new byte[2048]; // 복사할 배열
 		byte BCC_VALUE = 0; 			// BCC 값 저장
 		boolean breakTime = false;
 		for (int i = 2; i < in.length; i++) {
@@ -51,18 +51,18 @@ public class Common {
 				result[dataCnt++] = in[i++];
 				BCC_VALUE ^= in[i];
 			} else if (in[i] == DLE && in[i + 1] == ETX) {
-				BCC_VALUE ^= in[i]; // DLE
+				BCC_VALUE ^= in[i]; 	// DLE
 				BCC_VALUE ^= in[i + 1]; // ETX
 				if (BCC_VALUE != in[i + 2]) {
-					result = new byte[1024];
+					result = new byte[1];
 					result[0] = -1;
 				}
 				breakTime = true;
 			} else {
 				if (breakTime == true)
 					break;
-				result[dataCnt++] = in[i];
 				BCC_VALUE ^= in[i];
+				result[dataCnt++] = in[i];
 			}
 		}
 		return result;
