@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class Web implements Runnable {
 
@@ -38,23 +39,32 @@ public class Web implements Runnable {
 
 				// key:0 Web DataOutputStream
 				TcpIpServer.dcMap.put(dcVO.getDcId(), dcVO);
+				
+				// dis.read()이 3초간 응답없으면 SocketTimeoutException
+				socket.setSoTimeout(3000);
 
 				byte[] buffer = new byte[1024];
 				byte[] result = null;
 				int leftBufferSize = 0;
-				while ((leftBufferSize = dis.read(buffer, 0, buffer.length)) != -1) {
-					result = new byte[leftBufferSize];
-					for (int i = 0; i < result.length; i++) {
-						result[i] = buffer[i];
-					}
+				leftBufferSize = dis.read(buffer, 0, buffer.length);
+				result = new byte[leftBufferSize];
+				for (int i = 0; i < result.length; i++) {
+					result[i] = buffer[i];
+				}
 
-					switch ((char) result[0]) {
-					case 'A':
-						reserveControl(result); // 예약제어
-						break;
-					default:
-						break;
-					}
+				switch ((char) result[0]) {
+				case 'A':
+					reserveControl(result); // 예약제어
+					break;
+				default:
+					break;
+				}
+			} catch (SocketTimeoutException e) {
+				e.printStackTrace();
+				try {
+					socket.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
