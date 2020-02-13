@@ -12,7 +12,7 @@ public class TcpIpServer {
 
 	public TcpIpServer() {
 		dcMap = new Hashtable<Integer, DcVO>();
-		// 여러 스레드에서 접근할 것이므로 동기화
+		// 여러 스레드에서 접근할 것이므로 동기화 (thread-safe)
 		Collections.synchronizedMap(dcMap);
 		try {
 			serverSocket = new ServerSocket(5078);
